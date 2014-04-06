@@ -20,6 +20,7 @@
 %% API.
 -export([start_link/6]).
 -export([start_protocol/2]).
+-export([start_protocol/3]).
 -export([active_connections/1]).
 
 %% Supervisor internals.
