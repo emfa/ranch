@@ -19,5 +19,6 @@
 		Ref::ranch:ref(),
 		Socket::any(),
 		Transport::module(),
-		ProtocolOptions::any())
+		ProtocolOptions::any(),
+        Arguments::any())
 	-> {ok, ConnectionPid::pid()}.
