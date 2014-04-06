@@ -69,8 +69,12 @@ start_link(Ref, ConnType, Shutdown, Transport, AckTimeout, Protocol) ->
 %% continue.
 -spec start_protocol(pid(), inet:socket()) -> ok.
 start_protocol(SupPid, Socket) ->
-	SupPid ! {?MODULE, start_protocol, self(), Socket},
-	receive SupPid -> ok end.
+    start_protocol(SupPid, Socket, incoming).
+	
+-spec start_protocol(pid(), inet:socket(), any()) -> ok.
+start_protocol(SupPid, Socket, Args) ->
+    SupPid ! {?MODULE, start_protocol, self(), Socket, Args},
+    receive SupPid -> ok end.
 
 %% We can't make the above assumptions here. This function might be
 %% called from anywhere.
@@ -111,8 +115,8 @@ loop(State=#state{parent=Parent, ref=Ref, conn_type=ConnType,
 		ack_timeout=AckTimeout, max_conns=MaxConns},
 		CurConns, NbChildren, Sleepers) ->
 	receive
-		{?MODULE, start_protocol, To, Socket} ->
-			case Protocol:start_link(Ref, Socket, Transport, Opts) of
+		{?MODULE, start_protocol, To, Socket, Args} ->
+			case Protocol:start_link(Ref, Socket, Transport, Opts, Args) of
 				{ok, Pid} ->
 					Transport:controlling_process(Socket, Pid),
 					Pid ! {shoot, Ref, Transport, Socket, AckTimeout},
